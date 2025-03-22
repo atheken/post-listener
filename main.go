@@ -1,33 +1,54 @@
 package main
 
 import (
-	"errors"
+	_ "embed"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
+
+//go:embed landing_page.gohtml
+var landing_page string
 
 func main() {
 	done := make(chan error)
+
+	t := template.New("form")
+	t, _ = t.Parse(landing_page)
+
+	inputNames := os.Args[1:]
+
+	renderOut := func(w io.Writer) {
+		t.Execute(w, inputNames)
+	}
 
 	port := os.Getenv("HTTP_PORT")
 	if port == "" {
 		port = "9700"
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			done <- errors.New("invalid method used, POST is required")
-			return
-		}
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			done <- err
-			return
-		}
+	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		renderOut(w)
 		defer r.Body.Close()
-		fmt.Println(string(body))
+	})
+
+	http.HandleFunc("POST /", func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			renderOut(w)
+			return
+		}
+
+		vars := []string{}
+
+		for _, name := range inputNames {
+			vars = append(vars, fmt.Sprintf("%s='%s'", name, r.FormValue(name)))
+		}
+
+		defer r.Body.Close()
+		fmt.Println(strings.Join(vars, ";"))
 		close(done)
 	})
 

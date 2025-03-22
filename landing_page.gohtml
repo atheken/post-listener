@@ -1,0 +1,21 @@
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial;
+            font-size: medium;
+        }
+        input {
+            padding: 0.2em
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        {{range . }}
+        <input type="password" id="{{.}}" name="{{.}}" required placeholder="{{.}}"/><br/>
+        {{ end }}
+        <button>Submit</button>
+    </form>
+</body>
+</html>
