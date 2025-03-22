@@ -2,18 +2,36 @@
 <head>
     <style>
         body {
-            font-family: Arial;
-            font-size: medium;
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 10px;
         }
-        input {
-            padding: 0.2em
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        button {
+            background: #83E3FF;
+            color: #3191AD;
+            border: none;
+            cursor: pointer;
+            border-radius: 0.25em;
+            border: 1px solid #3191AD
+        }
+        button:hover {
+            background: #3191AD;
+            color: white
         }
     </style>
 </head>
 <body>
+    <h3>Please provide the requested inputs:</h3>
     <form method="POST">
         {{range . }}
-        <input type="password" id="{{.}}" name="{{.}}" required placeholder="{{.}}"/><br/>
+        <input type="text" name="{{.}}" required autocomplete="{{.}}" placeholder="{{.}}"/><br/>
         {{ end }}
         <button>Submit</button>
     </form>

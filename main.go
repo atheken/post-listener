@@ -48,6 +48,7 @@ func main() {
 		}
 
 		defer r.Body.Close()
+		w.Write([]byte("Values received! Thanks!"))
 		fmt.Println(strings.Join(vars, ";"))
 		close(done)
 	})
